@@ -1,98 +1,242 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🚀 Digital Onboarding API – Backend Challenge – Cristian Vasquez
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API REST desarrollada en **NestJS** para simular el flujo de **onboarding de clientes** en un banco digital.  
+La solución implementa autenticación con **JWT**, validaciones con **class-validator**, endpoints REST desacoplados y un entorno **dockerizado** para facilitar su ejecución.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## 🎯 Objetivo del Challenge
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+El objetivo del reto es demostrar habilidades en:
 
-## Project setup
+- Diseño de APIs REST
+- Autenticación con JWT
+- Validación de datos
+- Manejo de estados de negocio
+- Buenas prácticas en NestJS
+- Uso de Docker para entornos de desarrollo
 
-```bash
-$ npm install
+---
+
+## 🧠 Análisis de Requerimientos
+
+El reto solicita implementar los siguientes componentes:
+
+### 1. Autenticación
+- Endpoint `POST /auth/login`
+- Credenciales ficticias
+- Generación de JWT válido por 5 minutos
+
+### 2. Productos
+- `GET /products`
+- `GET /products/:id`
+- Manejo de errores (`404`)
+
+### 3. Onboarding
+- `POST /onboarding` protegido con JWT
+- Validaciones de entrada
+- Almacenamiento simulado
+- Retorno de estado `REQUESTED`
+
+### 4. Health Check
+- `GET /health` para verificación del servicio
+
+---
+
+## 🧱 Diseño de la Solución
+
+### 🔐 Autenticación (JWT + Guards)
+
+- Se utiliza **@nestjs/jwt** junto con **passport-jwt**
+- El flujo de autenticación se divide en:
+  - **JwtStrategy**: Define cómo se valida el token
+  - **JwtAuthGuard**: Define cuándo se valida el token
+- El resultado del método `validate()` se inyecta automáticamente en `req.user`
+
+### 🧾 Onboarding
+
+- Se implementa como un flujo independiente
+- No requiere base de datos (almacenamiento en memoria)
+- El estado inicial del onboarding es `REQUESTED`
+- Validaciones estrictas usando `class-validator`
+
+### 📦 Products
+
+- Endpoint independiente del onboarding
+- Datos mock en memoria
+- Implementación REST simple para evaluar diseño de API
+
+---
+
+## ⚙️ Tecnologías Usadas
+
+- **NestJS**
+- **Node.js 22**
+- **TypeScript**
+- **JWT (jsonwebtoken)**
+- **Passport**
+- **Docker**
+- **class-validator**
+- **class-transformer**
+- **UUID**
+- **VS Code**
+- **Postman**
+
+---
+
+## 📌 Endpoints Disponibles
+
+### 🔐 Auth
+
+#### `POST /auth/login`
+
+**Request Body**
+```json
+{
+  "username": "admin",
+  "password": "password123"
+}
+```
+**Response Body**
+```json
+{
+  "access_token": "jwt_token_here"
+}
 ```
 
-## Compile and run the project
+### 🧾 Onboarding (Protegido con JWT)
 
-```bash
-# development
-$ npm run start
+#### `POST /onboarding`
 
-# watch mode
-$ npm run start:dev
+**Headers**
 
-# production mode
-$ npm run start:prod
+```
+Authorization: Bearer <JWT>
+Content-Type: application/json
 ```
 
-## Run tests
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+**Request Body**
+```json
+{
+  "name": "Juan Perez",
+  "document": "123456789",
+  "email": "juan@mail.com",
+  "initialAmount": 100000
+}
+```
+**Response Body**
+```json
+{
+  "onboardingId": "uuid-generado",
+  "status": "REQUESTED"
+}
 ```
 
-## Deployment
+### 📦 Products
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+#### `GET /products`
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+**Headers**
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+```
+Authorization: Bearer <JWT>
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+**Request Body**
+```json
+[
+  { "id": 1, "name": "Savings Account", "price": 0 },
+  { "id": 2, "name": "Credit Card", "price": 50 },
+  { "id": 3, "name": "Personal Loan", "price": 100 }
+]
+```
 
-## Resources
+#### `GET /products/:id`
 
-Check out a few resources that may come in handy when working with NestJS:
+**Response Body**
+```json
+{
+  "id": 1,
+  "name": "Savings Account",
+  "price": 0
+}
+```
+**Response body Not found**
+```json
+{
+  "statusCode": 404,
+  "message": "Product not found",
+  "error": "Not Found"
+}
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+### ❤️ Health Check
 
-## Support
+#### `GET /health`
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+**Response Body**
 
-## Stay in touch
+```json
+{
+  "ok": true
+}
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+---
 
-## License
+## 🐳 Ejecución con Docker
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+### 1️⃣ Clonar el repositorio
+
+```
+git clone <repository-url>
+cd onboarding-api
+```
+
+### 2️⃣ Crear archivo .env
+
+```
+JWT_SECRET=super-secret-key
+JWT_EXPIRES_IN=300
+```
+
+### 3️⃣ Levantar el entorno
+
+```
+docker compose up --build
+```
+
+### La API estará disponible en:
+
+http://localhost:3000
+
+---
+
+## 👤 Autor
+
+- **Cristian Camilo Vasquez Osorio**
+- **Backend Developer – PHP / Node.js / NestJS**
+- **Arquitectura limpia, DDD, microservicios**
+
+---
+
+## 🔍 Repositorio de Referencia (NestJS Avanzado)
+
+**Si se desea revisar una implementación más compleja en NestJS, se puede consultar el siguiente repositorio:**
+
+👉 https://github.com/cristianV0117/over-app-api
+
+Este proyecto incluye conceptos avanzados como:
+
+- **Principios SOLID**
+- **Patrones de desarrollo**
+- **DDD (Domain Driven Design)**
+- **Arquitectura Hexagonal**
+- **Autenticación OAuth 2.0 con Google**
+- **JWT**
+- **MongoDB**
+- **Servicios de envío de emails**
+- **Arquitectura guiada por eventos (Event-Driven Design)**
+
+
+
